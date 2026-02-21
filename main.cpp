@@ -83,11 +83,15 @@ int main() {
 	glUseProgram(shaderProgram);
 	glBindVertexArray(VAO);
 
+	int colourLoc = glGetUniformLocation(shaderProgram, "uColour");
+
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUniform3f(colourLoc, 0.0f, (sin(glfwGetTime())/2.0f + 0.5f), 0.0f);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
