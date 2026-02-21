@@ -1,11 +1,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp> 
+
 #include "Shader.h"
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow*, int width, int height);
 void processInput(GLFWwindow* window);
+void move(GLFWwindow* window, glm::vec3& pos, float& rot);
 
 int main() {
 	glfwInit();
@@ -57,17 +62,27 @@ int main() {
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glm::vec3 position(0.0f);
+	float rotation = 0.0f;
 
 	shader.use();
+	unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+
 	glBindVertexArray(VAO);
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
+		move(window, position, rotation);
+
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, position);
+		transform = glm::rotate(transform, glm::radians(rotation), glm::vec3(0, 0, 1));
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
@@ -89,4 +104,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+void move(GLFWwindow* window, glm::vec3& pos, float& rot) {
+	float speed = 0.02f;
+	float rotSpeed = 1.0f;
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) pos.x += speed;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) pos.x -= speed;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) pos.y += speed;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) pos.y -= speed;
+
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) rot -= rotSpeed;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) rot += rotSpeed;
 }

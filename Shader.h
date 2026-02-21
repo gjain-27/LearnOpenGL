@@ -4,10 +4,11 @@
 
 class Shader {
 private:
-    unsigned int ID;
     std::string loadShaderSource(const char* path);
 
 public:
+    unsigned int ID;
+
     Shader(const char* vertexPath, const char* fragmentPath);
     void use();
 
