@@ -2,12 +2,14 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <sstream>
 
 void framebuffer_size_callback(GLFWwindow*, int width, int height);
 void processInput(GLFWwindow* window);
 std::string loadShaderSource(const char* path);
+void createCircle(std::vector<float>& vertices, std::vector<unsigned int>& indices);
 
 int main() {
 	glfwInit();
@@ -48,17 +50,10 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f
-	};
+	std::vector<float> vertices;
+	std::vector<unsigned int> indices;
 
-	unsigned int indices[] = {
-		0, 1, 2,
-		1, 2, 3
-	};
+	createCircle(vertices, indices);
 
 	unsigned int VAO, VBO, EBO;
 
@@ -67,11 +62,11 @@ int main() {
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -89,7 +84,7 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -117,4 +112,31 @@ std::string loadShaderSource(const char* path) {
 	std::stringstream buffer;
 	buffer << file.rdbuf();
 	return buffer.str();
+}
+
+void createCircle(std::vector<float>& vertices, std::vector<unsigned int>& indices) {
+	
+	vertices.insert(vertices.end(), {0.0f, 0.0f, 0.0f});
+
+	const float PI = 3.14159265359f;
+	int segments = 100;
+	float radius = 0.5f;
+
+	for (int i = 0; i < segments; i++) {
+		float angle = i * 2.0f * PI / segments;
+
+		float x = radius * cos(angle);
+		float y = radius * sin(angle);
+
+		vertices.insert(vertices.end(), {x, y, 0.0f});
+	}
+
+	for (int i = 1; i <= segments; i++) {
+		indices.push_back(0);
+		indices.push_back(i);
+		if (i < segments)
+			indices.push_back(i + 1);
+		else
+			indices.push_back(1);
+	}
 }
