@@ -35,15 +35,44 @@ int main() {
 	Shader shader("./shaders/default.vert", "./shaders/default.frag");
 
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,   1.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f,   1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f,   0.0f, 1.0f
+		-0.5f,-0.5f, 0.5f,  0.0f,0.0f,
+		 0.5f,-0.5f, 0.5f,  1.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,  1.0f,1.0f,
+		-0.5f, 0.5f, 0.5f,  0.0f,1.0f,
+
+		-0.5f,-0.5f,-0.5f,  1.0f,0.0f,
+		 0.5f,-0.5f,-0.5f,  0.0f,0.0f,
+		 0.5f, 0.5f,-0.5f,  0.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,  1.0f,1.0f,
+
+		-0.5f,-0.5f,-0.5f,  0.0f,0.0f,
+		-0.5f,-0.5f, 0.5f,  1.0f,0.0f,
+		-0.5f, 0.5f, 0.5f,  1.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,  0.0f,1.0f,
+
+		 0.5f,-0.5f,-0.5f,  1.0f,0.0f,
+		 0.5f,-0.5f, 0.5f,  0.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,  0.0f,1.0f,
+		 0.5f, 0.5f,-0.5f,  1.0f,1.0f,
+
+		-0.5f, 0.5f, 0.5f,  0.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,  1.0f,0.0f,
+		 0.5f, 0.5f,-0.5f,  1.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,  0.0f,1.0f,
+
+		-0.5f,-0.5f, 0.5f,  1.0f,1.0f,
+		 0.5f,-0.5f, 0.5f,  0.0f,1.0f,
+		 0.5f,-0.5f,-0.5f,  0.0f,0.0f,
+		-0.5f,-0.5f,-0.5f,  1.0f,0.0f
 	};
 
 	unsigned int indices[] = {
-		0, 1, 3,
-		1, 2, 3
+		 0,1,2, 2,3,0,
+		 4,5,6, 6,7,4,
+		 8,9,10, 10,11,8,
+		 12,13,14, 14,15,12,
+		 16,17,18, 18,19,16,
+		 20,21,22, 22,23,20
 	};
 
 	unsigned int VAO, VBO, EBO;
@@ -101,17 +130,23 @@ int main() {
 	glm::mat4 projection = glm::mat4(1.0f);
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		model = glm::mat4(1.0f);
+		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
