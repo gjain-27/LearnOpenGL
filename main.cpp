@@ -132,19 +132,14 @@ int main() {
 	shader.setInt("texture1", 0);
 	glBindVertexArray(VAO);
 
-	int modelLoc = glGetUniformLocation(shader.ID, "model");
-	int viewLoc = glGetUniformLocation(shader.ID, "view");
-	int projectionLoc = glGetUniformLocation(shader.ID, "projection");
-
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	glm::mat4 view = glm::mat4(1.0f);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 	glm::mat4 projection = glm::mat4(1.0f);
 	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	shader.setMat4("view", view);
+	shader.setMat4("projection", projection);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -159,7 +154,7 @@ int main() {
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			shader.setMat4("model", model);
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 		}
