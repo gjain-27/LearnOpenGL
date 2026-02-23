@@ -8,7 +8,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "Shader.h"
+#include "Shader.hpp"
 
 #include <iostream>
 
@@ -89,6 +89,21 @@ int main() {
 	shader.use();
 	shader.setInt("texture1", 0);
 	glBindVertexArray(VAO);
+
+	int modelLoc = glGetUniformLocation(shader.ID, "model");
+	int viewLoc = glGetUniformLocation(shader.ID, "view");
+	int projectionLoc = glGetUniformLocation(shader.ID, "projection");
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
