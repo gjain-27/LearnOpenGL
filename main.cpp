@@ -9,11 +9,13 @@
 #include "stb_image.h"
 
 #include "Shader.hpp"
+#include "Camera.hpp"
 
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow*, int width, int height);
 void processInput(GLFWwindow* window);
+void processMovement(GLFWwindow* window, Camera& camera, float deltaTime);
 
 int main() {
 	glfwInit();
@@ -128,32 +130,45 @@ int main() {
 
 	stbi_image_free(data);
 
+	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+
+	float deltaTime = 0.0f;
+	float previousTime = 0.0f;
+
 	shader.use();
 	shader.setInt("texture1", 0);
 	glBindVertexArray(VAO);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-	shader.setMat4("view", view);
-	shader.setMat4("projection", projection);
-
 	glEnable(GL_DEPTH_TEST);
 
 	while (!glfwWindowShouldClose(window)) {
+
+		float currentTime = static_cast<float>(glfwGetTime());
+		deltaTime = currentTime - previousTime;
+		previousTime = currentTime;
+
 		processInput(window);
+		processMovement(window, camera, deltaTime);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		view = camera.GetViewMatrix();
+		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+		shader.setMat4("view", view);
+		shader.setMat4("projection", projection);
+
 		for (int i = 0; i < 10; i++) {
-			
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			shader.setMat4("model", model);
 
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -178,4 +193,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+void processMovement(GLFWwindow* window, Camera& camera, float deltaTime) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(CameraMovement::Forward, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(CameraMovement::Backward, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(CameraMovement::Left, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(CameraMovement::Right, deltaTime);
 }
