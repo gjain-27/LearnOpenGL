@@ -16,6 +16,7 @@
 void framebuffer_size_callback(GLFWwindow*, int width, int height);
 void processInput(GLFWwindow* window);
 void processMovement(GLFWwindow* window, Camera& camera, float deltaTime);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 
 int main() {
 	glfwInit();
@@ -29,6 +30,8 @@ int main() {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -131,6 +134,7 @@ int main() {
 	stbi_image_free(data);
 
 	Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+	glfwSetWindowUserPointer(window, &camera);
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
@@ -204,4 +208,25 @@ void processMovement(GLFWwindow* window, Camera& camera, float deltaTime) {
 		camera.ProcessKeyboard(CameraMovement::Left, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(CameraMovement::Right, deltaTime);
+}
+
+void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
+	static float lastX = 400.0f;
+	static float lastY = 300.0f;
+	static bool firstMouse = true;
+
+	if (firstMouse) {
+		lastX = static_cast<float>(xPos);
+		lastY = static_cast<float>(yPos);
+		firstMouse = false;
+	}
+
+	float xOffset = static_cast<float>(xPos) - lastX;
+	float yOffset = lastY - static_cast<float>(yPos);
+
+	lastX = static_cast<float>(xPos);
+	lastY = static_cast<float>(yPos);
+
+	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+	cam->ProcessMouseMovement(xOffset, yOffset);
 }
