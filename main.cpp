@@ -14,9 +14,11 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow*, int width, int height);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
+
 void processInput(GLFWwindow* window);
 void processMovement(GLFWwindow* window, Camera& camera, float deltaTime);
-void mouse_callback(GLFWwindow* window, double xPos, double yPos);
 
 int main() {
 	glfwInit();
@@ -32,6 +34,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -162,7 +165,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		view = camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(camera.GetZoom()), 800.0f / 600.0f, 0.1f, 100.0f);
 
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
@@ -229,4 +232,9 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 
 	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 	cam->ProcessMouseMovement(xOffset, yOffset);
+}
+
+void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
+	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+	cam->ProcessMouseScroll(static_cast<float>(yOffset));
 }

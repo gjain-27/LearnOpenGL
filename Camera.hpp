@@ -19,6 +19,7 @@ private:
 
     float movementSpeed;
     float mouseSensitivity;
+    float zoom;
 
     float yaw;
     float pitch;
@@ -31,4 +32,7 @@ public:
     glm::mat4 GetViewMatrix();
     void ProcessKeyboard(CameraMovement direction, float deltaTime);
     void ProcessMouseMovement(float xPosOffset, float yPosOffset);
+    void ProcessMouseScroll(float yPosOffset);
+
+    float GetZoom();
 };
