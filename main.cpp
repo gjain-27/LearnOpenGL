@@ -43,35 +43,35 @@ int main() {
 	Shader lightCubeShader("./shaders/light_cube.vert", "./shaders/light_cube.frag");
 
 	float vertices[] = {
-		-0.5f,-0.5f, 0.5f,
-		 0.5f,-0.5f, 0.5f,
-		 0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
+		-0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-		-0.5f,-0.5f,-0.5f,
-		 0.5f,-0.5f,-0.5f,
-		 0.5f, 0.5f,-0.5f,
-		-0.5f, 0.5f,-0.5f,
+		-0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
+		 0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
+		 0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
+		-0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
 
-		-0.5f,-0.5f,-0.5f,
-		-0.5f,-0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f,-0.5f,
+		-0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f,
+		-0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f,
+		-0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f,
 
-		 0.5f,-0.5f,-0.5f,
-		 0.5f,-0.5f, 0.5f,
-		 0.5f, 0.5f, 0.5f,
-		 0.5f, 0.5f,-0.5f,
+		 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f,
+		 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+		 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+		 0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f,
 
-		-0.5f, 0.5f, 0.5f,
-		 0.5f, 0.5f, 0.5f,
-		 0.5f, 0.5f,-0.5f,
-		-0.5f, 0.5f,-0.5f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f,
 
-		-0.5f,-0.5f, 0.5f,
-		 0.5f,-0.5f, 0.5f,
-		 0.5f,-0.5f,-0.5f,
-		-0.5f,-0.5f,-0.5f
+		-0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f,
+		 0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f,
+		 0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f,
+		-0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f
 	};
 
 	unsigned int indices[] = {
@@ -96,8 +96,11 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
@@ -105,7 +108,7 @@ int main() {
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -123,6 +126,7 @@ int main() {
 
 	glm::vec3 oColor = glm::vec3(1.0f, 0.5f, 0.31f);
 	glm::vec3 lColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -145,6 +149,7 @@ int main() {
 
 		lightingShader.setVec3("objectColor", oColor);
 		lightingShader.setVec3("lightColor", lColor);
+		lightingShader.setVec3("lightPos", lightPos);
 
 		model = glm::mat4(1.0f);
 		lightingShader.setMat4("model", model);
@@ -157,7 +162,7 @@ int main() {
 		lightCubeShader.setMat4("view", view);
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(1.2f, 1.0f, 2.0f));
+		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f));
 		lightCubeShader.setMat4("model", model);
 
