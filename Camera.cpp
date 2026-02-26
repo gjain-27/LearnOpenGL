@@ -60,6 +60,7 @@ glm::mat4 Camera::GetViewMatrix() {
 float Camera::GetZoom() { return zoom; }
 
 glm::vec3 Camera::getCameraPos() { return cameraPos; }
+glm::vec3 Camera::getCameraFront() { return cameraFront; }
 
 void Camera::updateCameraVectors() {
     glm::vec3 tempCameraFront;

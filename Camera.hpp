@@ -36,4 +36,5 @@ public:
 
     float GetZoom();
     glm::vec3 getCameraPos();
+    glm::vec3 getCameraFront();
 };
