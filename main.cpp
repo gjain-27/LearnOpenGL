@@ -159,7 +159,6 @@ int main() {
 		lightingShader.setMat4("projection", projection);
 		lightingShader.setMat4("view", view);
 
-		lightingShader.setVec3("light.position", lightPos);
 		lightingShader.setVec3("viewPos", camera.getCameraPos());
 		lightingShader.setFloat("material.shininess", 32.0f);
 
@@ -167,6 +166,14 @@ int main() {
 		lightingShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
 		lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
 		lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+		lightingShader.setVec3("pointLight.position", lightPos);
+		lightingShader.setVec3("pointLight.ambient", 0.05f, 0.05f, 0.05f);
+		lightingShader.setVec3("pointLight.diffuse", 0.8f, 0.8f, 0.8f);
+		lightingShader.setVec3("pointLight.specular", 1.0f, 1.0f, 1.0f);
+		lightingShader.setFloat("pointLight.constant", 1.0f);
+		lightingShader.setFloat("pointLight.linear", 0.09f);
+		lightingShader.setFloat("pointLight.quadratic", 0.032f);
 
 		model = glm::mat4(1.0f);
 		lightingShader.setMat4("model", model);
