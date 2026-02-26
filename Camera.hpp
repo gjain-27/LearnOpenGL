@@ -35,4 +35,5 @@ public:
     void ProcessMouseScroll(float yPosOffset);
 
     float GetZoom();
+    glm::vec3 getCameraPos();
 };
