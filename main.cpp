@@ -134,9 +134,11 @@ int main() {
 	glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
 
 	unsigned int diffuseMap = loadTexture("./resources/textures/container2.png");
+	unsigned int specularMap = loadTexture("./resources/textures/container2_specular.png");
 
 	lightingShader.use();
 	lightingShader.setInt("material.diffuse", 0);
+	lightingShader.setInt("material.specular", 1);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -174,6 +176,9 @@ int main() {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
 
 		glBindVertexArray(cubeVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
