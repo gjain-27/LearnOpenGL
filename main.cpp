@@ -5,6 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp> 
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "Shader.hpp"
 #include "Camera.hpp"
 
@@ -16,6 +19,7 @@ void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 
 void processInput(GLFWwindow* window);
 void processMovement(GLFWwindow* window, Camera& camera, float deltaTime);
+unsigned int loadTexture(const char* path);
 
 int main() {
 	glfwInit();
@@ -43,35 +47,35 @@ int main() {
 	Shader lightCubeShader("./shaders/light_cube.vert", "./shaders/light_cube.frag");
 
 	float vertices[] = {
-		-0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		 0.5f,-0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f,-0.5f, 0.5f,   0.0f,0.0f,1.0f,    0.0f,0.0f,
+		 0.5f,-0.5f, 0.5f,   0.0f,0.0f,1.0f,    1.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,   0.0f,0.0f,1.0f,    1.0f,1.0f,
+		-0.5f, 0.5f, 0.5f,   0.0f,0.0f,1.0f,    0.0f,1.0f,
 
-		-0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
-		 0.5f,-0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
-		 0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
-		-0.5f, 0.5f,-0.5f, 0.0f, 0.0f,-1.0f,
+		-0.5f,-0.5f,-0.5f,   0.0f,0.0f,-1.0f,   0.0f,0.0f,
+		 0.5f,-0.5f,-0.5f,   0.0f,0.0f,-1.0f,   1.0f,0.0f,
+		 0.5f, 0.5f,-0.5f,   0.0f,0.0f,-1.0f,   1.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,   0.0f,0.0f,-1.0f,   0.0f,1.0f,
 
-		-0.5f,-0.5f,-0.5f,-1.0f, 0.0f, 0.0f,
-		-0.5f,-0.5f, 0.5f,-1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f,-1.0f, 0.0f, 0.0f,
-		-0.5f, 0.5f,-0.5f,-1.0f, 0.0f, 0.0f,
+		-0.5f,-0.5f,-0.5f,  -1.0f,0.0f,0.0f,    0.0f,0.0f,
+		-0.5f,-0.5f, 0.5f,  -1.0f,0.0f,0.0f,    1.0f,0.0f,
+		-0.5f, 0.5f, 0.5f,  -1.0f,0.0f,0.0f,    1.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,  -1.0f,0.0f,0.0f,    0.0f,1.0f,
 
-		 0.5f,-0.5f,-0.5f, 1.0f, 0.0f, 0.0f,
-		 0.5f,-0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-		 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-		 0.5f, 0.5f,-0.5f, 1.0f, 0.0f, 0.0f,
+		 0.5f,-0.5f,-0.5f,   1.0f,0.0f,0.0f,    0.0f,0.0f,
+		 0.5f,-0.5f, 0.5f,   1.0f,0.0f,0.0f,    1.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,   1.0f,0.0f,0.0f,    1.0f,1.0f,
+		 0.5f, 0.5f,-0.5f,   1.0f,0.0f,0.0f,    0.0f,1.0f,
 
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f,-0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f,   0.0f,1.0f,0.0f,    0.0f,0.0f,
+		 0.5f, 0.5f, 0.5f,   0.0f,1.0f,0.0f,    1.0f,0.0f,
+		 0.5f, 0.5f,-0.5f,   0.0f,1.0f,0.0f,    1.0f,1.0f,
+		-0.5f, 0.5f,-0.5f,   0.0f,1.0f,0.0f,    0.0f,1.0f,
 
-		-0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f,
-		 0.5f,-0.5f, 0.5f, 0.0f,-1.0f, 0.0f,
-		 0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f,
-		-0.5f,-0.5f,-0.5f, 0.0f,-1.0f, 0.0f
+		-0.5f,-0.5f, 0.5f,   0.0f,-1.0f,0.0f,   0.0f,0.0f,
+		 0.5f,-0.5f, 0.5f,   0.0f,-1.0f,0.0f,   1.0f,0.0f,
+		 0.5f,-0.5f,-0.5f,   0.0f,-1.0f,0.0f,   1.0f,1.0f,
+		-0.5f,-0.5f,-0.5f,   0.0f,-1.0f,0.0f,   0.0f,1.0f
 	};
 
 	unsigned int indices[] = {
@@ -96,11 +100,14 @@ int main() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
@@ -108,7 +115,7 @@ int main() {
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -125,6 +132,11 @@ int main() {
 	float previousTime = 0.0f;
 
 	glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
+
+	unsigned int diffuseMap = loadTexture("./resources/textures/container2.png");
+
+	lightingShader.use();
+	lightingShader.setInt("material.diffuse", 0);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -159,6 +171,9 @@ int main() {
 
 		model = glm::mat4(1.0f);
 		lightingShader.setMat4("model", model);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 
 		glBindVertexArray(cubeVAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -232,4 +247,35 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	Camera* cam = static_cast<Camera*>(glfwGetWindowUserPointer(window));
 	cam->ProcessMouseScroll(static_cast<float>(yOffset));
+}
+
+unsigned int loadTexture(char const* path) {
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+
+	GLenum format;
+	if (nrComponents == 1)
+		format = GL_RED;
+	else if (nrComponents == 3)
+		format = GL_RGB;
+	else if (nrComponents == 4)
+		format = GL_RGBA;
+	else
+		format = GL_RGB;
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+
+	return textureID;
 }
