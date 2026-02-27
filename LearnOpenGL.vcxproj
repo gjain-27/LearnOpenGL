@@ -105,12 +105,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glm-1.0.3;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glad\include;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\assimp\build\include;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glm-1.0.3;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glad\include;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glfw\include;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glfw\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\glfw\lib;C:\Users\jaing\source\repos\LearnOpenGL\Dependencies\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
